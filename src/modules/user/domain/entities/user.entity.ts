@@ -1,4 +1,4 @@
-import { UserStatus } from 'src/common/utils/enum';
+import { UserRoles, UserStatus } from 'src/common/utils/enum';
 
 export class User {
   constructor(data?: Partial<User>) {
@@ -14,6 +14,7 @@ export class User {
   name: string;
   email: string;
   password: string;
+  role: UserRoles;
   status: UserStatus;
   createdAt: Date;
   updatedAt?: Date | null;
