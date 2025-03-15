@@ -1,19 +1,19 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { USER_REPOSITORY } from 'src/common/tokens/repositories.tokens';
+import { AUTH_REPOSITORY } from 'src/common/tokens/repositories.tokens';
 import { PasswordUtils } from 'src/common/utils/password.utils';
 import { User } from 'src/modules/user/domain/entities/user.entity';
-import { IUserRepository } from 'src/modules/user/domain/interfaces/user.interface';
+import { IAuthRepository } from '../interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepository: IUserRepository,
+    @Inject(AUTH_REPOSITORY)
+    private readonly authRepository: IAuthRepository,
   ) {}
   async create(user: User): Promise<User> {
     try {
       user.password = await PasswordUtils.hashPassword(user.password);
-      const createUser = await this.userRepository.signup(user);
+      const createUser = await this.authRepository.signup(user);
       return createUser;
     } catch (e) {
       throw new BadRequestException(e.message);
