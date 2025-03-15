@@ -10,11 +10,32 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   name      String   
-  email      String   @unique
+  email     String   @unique
   password  String
   role      Int
   status    Int
   createdAt DateTime @default(now())
   updatedAt DateTime? 
   deletedAt DateTime?
+}
+
+model Restaurant {
+  id         Int    @id @default(autoincrement())
+  name       String
+  UF         String
+  city       String
+  taxnumber  String  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime? 
+  deletedAt DateTime?
+}
+
+ /* Vincular donos a restaurante N:N */
+model UserRestaurant {
+  userId          Int      @id @default(autoincrement())
+  restaurantId    String
+  permissionLevel String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime? 
+  deletedAt       DateTime?
 }
