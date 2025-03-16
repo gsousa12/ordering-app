@@ -11,11 +11,11 @@ export class EmployeeMapper {
     return user;
   }
 
-  static async toMapperResponse(user: User): Promise<CreateEmployeeResponseDto> {
+  static async toMapperResponse(createdEmployee: User): Promise<CreateEmployeeResponseDto> {
     const createEmployeeResponseDto = new CreateEmployeeResponseDto();
-    createEmployeeResponseDto.name = user.name;
-    createEmployeeResponseDto.email = user.email;
-    createEmployeeResponseDto.createdAt = user.createdAt || new Date();
+    createEmployeeResponseDto.name = createdEmployee.name;
+    createEmployeeResponseDto.email = createdEmployee.email;
+    createEmployeeResponseDto.createdAt = createdEmployee.createdAt || new Date();
     return createEmployeeResponseDto;
   }
 }

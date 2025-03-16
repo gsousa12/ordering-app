@@ -15,7 +15,6 @@ import { UserRoles } from 'src/common/utils/enum';
 import { CreateRestaurantRequestDto } from '../../domain/dtos/request/create-restaurant.request.dto';
 import { RestaurantMapper } from '../../domain/mappers/restaurant.mapper';
 import { RestaurantService } from '../../domain/services/restaurant.service';
-import { IsNotEmpty } from 'class-validator';
 
 @Controller('restaurant')
 export class RestaurantControler {
@@ -28,7 +27,6 @@ export class RestaurantControler {
   async createRestaurant(@Body() createRestaurantDto: CreateRestaurantRequestDto, @Request() req) {
     try {
       const userId: number = req.user.sub;
-      if (!userId) throw new BadRequestException('Generic Error');
 
       const restaurant = await RestaurantMapper.toMapperCreateRestaurant(createRestaurantDto);
       const createdRestaurant = await this.restaurantService.createRestaurant(restaurant, userId);

@@ -10,24 +10,6 @@ export class RestaurantRepository implements IRestaurantRepository {
 
   async createRestaurant(restaurant: Restaurant, userId: number): Promise<Restaurant> {
     try {
-      const existRegisteredTaxNumber = await this.prisma.restaurant.findMany({
-        where: {
-          taxNumber: restaurant.taxNumber,
-          users: {
-            some: {
-              userId: userId,
-            },
-          },
-        },
-        include: {
-          users: true,
-        },
-      });
-
-      if (existRegisteredTaxNumber.length) {
-        throw new BadRequestException('TaxNumber already registered for this user');
-      }
-
       const createdRestaurant = await this.prisma.restaurant.create({
         data: {
           name: restaurant.name,
@@ -51,5 +33,21 @@ export class RestaurantRepository implements IRestaurantRepository {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async verifyExistRegisteredTaxNumber(taxNumber: string, userId: number) {
+    await this.prisma.restaurant.findMany({
+      where: {
+        taxNumber: taxNumber,
+        users: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+      include: {
+        users: true,
+      },
+    });
   }
 }

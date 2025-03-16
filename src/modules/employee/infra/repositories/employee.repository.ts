@@ -2,35 +2,59 @@ import { User } from 'src/modules/user/domain/entities/user.entity';
 import { IEmployeeRepository } from '../../domain/interfaces/employee.interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/modules/prisma-module/prisma.service';
-import { UserRoles, UserStatus } from 'src/common/utils/enum';
+import { UserRestaurantPermissionLevel, UserRoles, UserStatus } from 'src/common/utils/enum';
 
 @Injectable()
 export class EmployeeRepository implements IEmployeeRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createEmployee(user: User): Promise<User> {
+  async createEmployee(employee: User): Promise<User> {
     try {
-      const existRegisteredEmail = await this.prisma.user.findUnique({
-        where: { email: user.email },
-      });
-
-      if (existRegisteredEmail) {
-        throw new BadRequestException('Email already registered');
-      }
-
-      const createdUser = await this.prisma.user.create({
+      const createdEmployee = await this.prisma.user.create({
         data: {
-          name: user.name,
-          email: user.email,
-          password: user.password,
+          name: employee.name,
+          email: employee.email,
+          password: employee.password,
           status: UserStatus.ACTIVE,
           role: UserRoles.EMPLOYEE,
-          createdAt: user.createdAt || new Date(),
+          createdAt: employee.createdAt || new Date(),
         },
       });
-      return new User(createdUser);
+      return new User(createdEmployee);
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async verifyExistRegisteredEmail(email: string) {
+    await this.prisma.user.findUnique({
+      where: { email: email },
+    });
+  }
+
+  async verifyUserIsRestaurantOwner(userId: number, restaurantId: number) {
+    return this.prisma.userRestaurant.findUnique({
+      where: {
+        userId_restaurantId: {
+          userId: userId,
+          restaurantId: restaurantId,
+        },
+        permissionLevel: UserRestaurantPermissionLevel.ADMIN,
+      },
+    });
+  }
+
+  async linkEmployeeToRestaurant(
+    employeeId: number,
+    restaurantId: number,
+    permissionLevel: UserRestaurantPermissionLevel,
+  ) {
+    return this.prisma.userRestaurant.create({
+      data: {
+        userId: employeeId,
+        restaurantId: restaurantId,
+        permissionLevel: permissionLevel,
+      },
+    });
   }
 }

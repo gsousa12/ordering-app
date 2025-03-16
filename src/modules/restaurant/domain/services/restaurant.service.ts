@@ -11,6 +11,15 @@ export class RestaurantService {
 
   async createRestaurant(restaurant: Restaurant, userId: number): Promise<Restaurant> {
     try {
+      const verifyExistRegisteredTaxNumber = await this.restaurantRepository.verifyExistRegisteredTaxNumber(
+        restaurant.taxNumber,
+        userId,
+      );
+
+      if (verifyExistRegisteredTaxNumber) {
+        throw new BadRequestException('TaxNumber already registered for this user');
+      }
+
       const createRestaurant = this.restaurantRepository.createRestaurant(restaurant, userId);
       return createRestaurant;
     } catch (e) {

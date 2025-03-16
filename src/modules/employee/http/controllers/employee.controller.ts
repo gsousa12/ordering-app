@@ -1,4 +1,13 @@
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateEmployeeRequestDto } from '../../domain/dtos/request/create-employee.request.dto';
 import { EmployeeMapper } from '../../domain/mappers/createEmployee.mapper';
 import { EmployeeService } from '../../domain/services/employee.service';
@@ -14,11 +23,19 @@ export class EmployeeController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard('jwt'), RoleGuard)
   @Role(UserRoles.OWNER)
-  async create(@Body() createEmployeeRequestDto: CreateEmployeeRequestDto) {
+  async create(@Body() createEmployeeRequestDto: CreateEmployeeRequestDto, @Request() req) {
+    const userId = req.user.sub;
+    const permissionLevel = req.body.permissionLevel;
+    const restaurantId = req.body.restaurantId;
     try {
-      const user = await EmployeeMapper.toMapperCreateEmployee(createEmployeeRequestDto);
-      const createdUser = await this.employeeService.createEmployee(user);
-      const createEmployeeResponse = EmployeeMapper.toMapperResponse(createdUser);
+      const employee = await EmployeeMapper.toMapperCreateEmployee(createEmployeeRequestDto);
+      const createdEmployee = await this.employeeService.createEmployee(
+        employee,
+        userId,
+        restaurantId,
+        permissionLevel,
+      );
+      const createEmployeeResponse = EmployeeMapper.toMapperResponse(createdEmployee);
       return createEmployeeResponse;
     } catch (e) {
       throw new BadRequestException(e.message);
