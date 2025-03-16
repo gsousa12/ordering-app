@@ -11,11 +11,11 @@ export class AuthRepository implements IAuthRepository {
 
   async signup(user: User): Promise<User> {
     try {
-      const existRegisteredMail = await this.prisma.user.findUnique({
+      const existRegisteredEMail = await this.prisma.user.findUnique({
         where: { email: user.email },
       });
 
-      if (existRegisteredMail) {
+      if (existRegisteredEMail) {
         throw new BadRequestException('Email already registered');
       }
 
@@ -34,5 +34,21 @@ export class AuthRepository implements IAuthRepository {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const existRegisteredEMail = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!existRegisteredEMail) {
+      throw new BadRequestException('There is no user registered with this email.');
+    }
+
+    const user = this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    return user;
   }
 }

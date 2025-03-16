@@ -8,15 +8,20 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   
-  email     String   @unique
-  password  String
-  role      Int
-  status    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime? 
-  deletedAt DateTime?
+  id          Int      @id @default(autoincrement())
+  name        String   
+  email       String   @unique
+  password    String
+  role        Int
+  status      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? 
+  deletedAt   DateTime?
+
+  // Relação com restaurantes (N:M)
+  restaurants UserRestaurant[]
+
+  @@map("users")
 }
 
 model Restaurant {
@@ -28,14 +33,27 @@ model Restaurant {
   createdAt DateTime @default(now())
   updatedAt DateTime? 
   deletedAt DateTime?
+
+  // Relação com usuários (N:M)
+  users     UserRestaurant[]
+
+  @@map("restaurant")
 }
 
  /* Vincular donos a restaurante N:N */
 model UserRestaurant {
-  userId          Int      @id @default(autoincrement())
-  restaurantId    String
+  userId          Int      
+  restaurantId    Int
   permissionLevel String
-  createdAt       DateTime @default(now())
+  createdAt       DateTime   @default(now())
   updatedAt       DateTime? 
   deletedAt       DateTime?
+
+  // Relações explícitas
+  user            User       @relation(fields: [userId], references: [id])
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@id([userId, restaurantId])
+
+  @@map("user_restaurant")
 }
