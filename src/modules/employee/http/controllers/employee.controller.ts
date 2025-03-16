@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { CreateEmployeeRequestDto } from '../../domain/dtos/request/createEmployee.request.dto';
+import { CreateEmployeeRequestDto } from '../../domain/dtos/request/create-employee.request.dto';
 import { EmployeeMapper } from '../../domain/mappers/createEmployee.mapper';
 import { EmployeeService } from '../../domain/services/employee.service';
 import { RoleGuard } from 'src/common/guards/role.guard';
@@ -12,8 +12,8 @@ export class EmployeeController {
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(AuthGuard('jwt'), RoleGuard) // Aplica AuthGuard primeiro
-  @Role(UserRoles.OWNER) // Define que apenas OWNER (role = 0) pode acessar
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @Role(UserRoles.OWNER)
   async create(@Body() createEmployeeRequestDto: CreateEmployeeRequestDto) {
     try {
       const user = await EmployeeMapper.toMapperCreateEmployee(createEmployeeRequestDto);

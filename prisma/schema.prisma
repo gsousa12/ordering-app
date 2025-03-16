@@ -29,10 +29,10 @@ model Restaurant {
   name       String
   UF         String
   city       String
-  taxnumber  String  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime? 
-  deletedAt DateTime?
+  taxNumber  String  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime? 
+  deletedAt  DateTime?
 
   // Relação com usuários (N:M)
   users     UserRestaurant[]
@@ -44,7 +44,7 @@ model Restaurant {
 model UserRestaurant {
   userId          Int      
   restaurantId    Int
-  permissionLevel String
+  permissionLevel Int
   createdAt       DateTime   @default(now())
   updatedAt       DateTime? 
   deletedAt       DateTime?

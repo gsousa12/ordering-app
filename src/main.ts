@@ -6,12 +6,12 @@ import { AppConfig } from './config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //   }),
+  // );
   app.enableCors({
     origin: AppConfig.client_url,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
