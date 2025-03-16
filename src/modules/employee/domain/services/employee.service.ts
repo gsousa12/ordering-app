@@ -18,6 +18,9 @@ export class EmployeeService {
     permissionLevel: UserRestaurantPermissionLevel,
   ): Promise<User> {
     try {
+      if (!userId || !restaurantId || !permissionLevel) {
+        throw new BadRequestException('Invalid request');
+      }
       const verifyUserIsRestaurantOwner = await this.employeeRepository.verifyUserIsRestaurantOwner(
         userId,
         restaurantId,
