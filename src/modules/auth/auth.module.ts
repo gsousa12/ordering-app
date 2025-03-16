@@ -7,6 +7,7 @@ import { AuthRepository } from './infra/repositories/auth.repository';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AppConfig } from 'src/config/app.config';
+import { JwtStrategy } from './domain/strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { AppConfig } from 'src/config/app.config';
       useClass: AuthRepository,
     },
     AuthService,
+    JwtStrategy,
   ],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
