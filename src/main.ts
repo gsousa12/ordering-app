@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { AppConfig } from './config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,14 +13,14 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: process.env.CLIENT_URL,
+    origin: AppConfig.client_url,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
 
   app.useGlobalInterceptors(new ResponseInterceptor());
-  await app.listen(process.env.PORT!);
-  console.log('Server is running');
+  await app.listen(AppConfig.port);
+  console.log(`Server is running on port: ${AppConfig.port}`);
 }
 bootstrap();

@@ -6,14 +6,15 @@ import { AuthService } from './domain/services/auth.service';
 import { AuthRepository } from './infra/repositories/auth.repository';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { AppConfig } from 'src/config/app.config';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: '1h' },
+        secret: AppConfig.jwt_secret,
+        signOptions: { expiresIn: AppConfig.jwt_expiration_time },
       }),
     }),
     PrismaModule,
