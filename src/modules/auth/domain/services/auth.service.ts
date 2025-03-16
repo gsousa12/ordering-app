@@ -6,12 +6,14 @@ import { IAuthRepository } from '../interfaces/auth.interface';
 import { LoginRequestDto } from '../dtos/request/login.request.dto';
 import { LoginResponseDto } from '../dtos/response/login.response.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(AUTH_REPOSITORY)
     private readonly authRepository: IAuthRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(user: User): Promise<User> {
@@ -28,13 +30,13 @@ export class AuthService {
     const user = await this.validateUser(loginRequestDto.email, loginRequestDto.password);
 
     if (!user) {
-      throw new BadRequestException('Invalid password invalid');
+      throw new BadRequestException('Invalid invalid');
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role, status: user.status };
 
     return {
-      access_token: '',
+      access_token: this.jwtService.sign(payload),
     };
   }
 
