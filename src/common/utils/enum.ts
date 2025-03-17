@@ -1,22 +1,22 @@
 export enum UserStatus {
-  ACTIVE = 0,
-  INACTIVE = 1,
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
 }
 
 export enum RestaurantStatus {
-  ACTIVE = 0,
-  INACTIVE = 1,
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
 }
 
 export enum UserRoles {
-  OWNER = 0,
-  EMPLOYEE = 1,
+  OWNER = 'owner',
+  EMPLOYEE = 'employee',
 }
 
 export enum UserRestaurantPermissionLevel {
-  ADMIN = 0,
-  MANAGER = 1,
-  WAITER = 2,
-  CHEF = 3,
-  CASH_MANAGER = 4,
+  ADMIN = 'admin',
+  MANAGER = 'manager',
+  WAITER = 'waiter',
+  CHEF = 'chef',
+  CASH_MANAGER = 'cash_manager',
 }

@@ -12,8 +12,8 @@ model User {
   name        String   
   email       String   @unique
   password    String
-  role        Int
-  status      Int
+  role        String
+  status      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime? 
   deletedAt   DateTime?
@@ -44,7 +44,7 @@ model Restaurant {
 model UserRestaurant {
   userId          Int      
   restaurantId    Int
-  permissionLevel Int
+  permissionLevel String
   createdAt       DateTime   @default(now())
   updatedAt       DateTime? 
   deletedAt       DateTime?

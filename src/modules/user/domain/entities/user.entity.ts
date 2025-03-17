@@ -14,8 +14,8 @@ export class User {
   name: string;
   email: string;
   password: string;
-  role: UserRoles;
-  status: UserStatus;
+  role: string;
+  status: string;
   createdAt: Date;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
