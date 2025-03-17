@@ -7,6 +7,8 @@ import { LoginRequestDto } from '../dtos/request/login.request.dto';
 import { LoginResponseDto } from '../dtos/response/login.response.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
+import { AppConfig } from 'src/config/app.config';
 
 @Injectable()
 export class AuthService {
@@ -32,7 +34,7 @@ export class AuthService {
     }
   }
 
-  async login(loginRequestDto: LoginRequestDto): Promise<LoginResponseDto> {
+  async login(loginRequestDto: LoginRequestDto, res: Response) {
     const user = await this.validateUser(loginRequestDto.email, loginRequestDto.password);
 
     if (!user) {
@@ -41,9 +43,26 @@ export class AuthService {
 
     const payload = { sub: user.id, email: user.email, role: user.role, status: user.status };
 
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    const implementsCookies = this.implementsCookies(access_token, refresh_token, res);
+
+    if (!implementsCookies) {
+      throw new BadRequestException('Generic Error');
+    }
+
+    return { message: 'Login successful' };
+  }
+
+  async logout(res: Response) {
+    const clearCookies = this.clearCookies(res);
+
+    if (!clearCookies) {
+      throw new BadRequestException('Generic Error');
+    }
+
+    return { message: 'Logout successful' };
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -70,5 +89,34 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async implementsCookies(access_token: string, refresh_token: string, res: Response) {
+    res.cookie('access_token', access_token, {
+      httpOnly: true, // Impede acesso via JavaScript
+      secure: AppConfig.node_env === 'production', // Usar HTTPS em produção
+      sameSite: 'strict',
+      maxAge: AppConfig.access_token_age, // 1 hora
+    });
+
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: AppConfig.node_env === 'production',
+      sameSite: 'strict',
+      maxAge: AppConfig.refresh_token_age, // 7 dias
+    });
+  }
+
+  async clearCookies(res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: AppConfig.node_env === 'production',
+      sameSite: 'strict',
+    });
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: AppConfig.node_env === 'production',
+      sameSite: 'strict',
+    });
   }
 }

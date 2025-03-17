@@ -36,7 +36,7 @@ export class RestaurantRepository implements IRestaurantRepository {
   }
 
   async verifyExistRegisteredTaxNumber(taxNumber: string, userId: number) {
-    await this.prisma.restaurant.findMany({
+    const existRegisteredTaxNumber = await this.prisma.restaurant.findMany({
       where: {
         taxNumber: taxNumber,
         users: {
@@ -49,5 +49,7 @@ export class RestaurantRepository implements IRestaurantRepository {
         users: true,
       },
     });
+
+    return existRegisteredTaxNumber;
   }
 }

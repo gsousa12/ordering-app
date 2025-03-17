@@ -27,13 +27,15 @@ export class EmployeeRepository implements IEmployeeRepository {
   }
 
   async verifyExistRegisteredEmail(email: string) {
-    await this.prisma.user.findUnique({
+    const existRegisteredEmail = await this.prisma.user.findUnique({
       where: { email: email },
     });
+
+    return existRegisteredEmail;
   }
 
   async verifyUserIsRestaurantOwner(userId: number, restaurantId: number) {
-    return this.prisma.userRestaurant.findUnique({
+    const verifyUserIsRestaurantOwner = this.prisma.userRestaurant.findUnique({
       where: {
         userId_restaurantId: {
           userId: userId,
@@ -42,6 +44,8 @@ export class EmployeeRepository implements IEmployeeRepository {
         permissionLevel: UserRestaurantPermissionLevel.ADMIN,
       },
     });
+
+    return verifyUserIsRestaurantOwner;
   }
 
   async linkEmployeeToRestaurant(
