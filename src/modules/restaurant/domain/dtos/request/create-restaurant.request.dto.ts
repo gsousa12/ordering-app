@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, Length, MaxLength, MinLength } from 'class-validator';
 
 export class CreateRestaurantRequestDto {
   @IsNotEmpty()
@@ -20,7 +20,6 @@ export class CreateRestaurantRequestDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(14)
-  @MaxLength(14)
+  @Length(14)
   taxNumber: string;
 }
