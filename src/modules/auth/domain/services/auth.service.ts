@@ -16,11 +16,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(user: User): Promise<User> {
+  async signup(ownerUser: User): Promise<User> {
     try {
-      user.password = await PasswordUtils.hashPassword(user.password);
-      const createUser = await this.authRepository.signup(user);
-      return createUser;
+      const existRegisteredEMail = await this.authRepository.verifyExistRegisteredEMail(ownerUser.email);
+
+      if (existRegisteredEMail) {
+        throw new BadRequestException('Email already registered');
+      }
+
+      ownerUser.password = await PasswordUtils.hashPassword(ownerUser.password);
+      const createOwnerUser = await this.authRepository.signup(ownerUser);
+      return createOwnerUser;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
@@ -41,6 +47,12 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
+    const existRegisteredEMail = await this.authRepository.verifyExistRegisteredEMail(email);
+
+    if (!existRegisteredEMail) {
+      throw new BadRequestException('There is no user registered with this email.');
+    }
+
     const user = await this.authRepository.findByEmail(email);
 
     if (!user) {
@@ -48,6 +60,10 @@ export class AuthService {
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      throw new BadRequestException('Invalid password');
+    }
 
     if (user && isValidPassword) {
       return user;

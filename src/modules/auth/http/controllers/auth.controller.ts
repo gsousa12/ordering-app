@@ -12,9 +12,9 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() signupRequestDto: SignupRequestDto) {
     try {
-      const user = await AuthMapper.toMapperSignup(signupRequestDto);
-      const createdUser = await this.authService.create(user);
-      const signupResponse = AuthMapper.toMapperResponse(createdUser);
+      const ownerUser = await AuthMapper.toMapperSignup(signupRequestDto);
+      const createdOwnerUser = await this.authService.signup(ownerUser);
+      const signupResponse = AuthMapper.toMapperResponse(createdOwnerUser);
       return signupResponse;
     } catch (e) {
       throw new BadRequestException(e.message);

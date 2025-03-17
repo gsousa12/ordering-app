@@ -10,14 +10,6 @@ export class AuthRepository implements IAuthRepository {
 
   async signup(user: User): Promise<User> {
     try {
-      const existRegisteredEMail = await this.prisma.user.findUnique({
-        where: { email: user.email },
-      });
-
-      if (existRegisteredEMail) {
-        throw new BadRequestException('Email already registered');
-      }
-
       const createdUser = await this.prisma.user.create({
         data: {
           name: user.name,
@@ -35,15 +27,13 @@ export class AuthRepository implements IAuthRepository {
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const existRegisteredEMail = await this.prisma.user.findUnique({
+  async verifyExistRegisteredEMail(email: string) {
+    await this.prisma.user.findUnique({
       where: { email },
     });
+  }
 
-    if (!existRegisteredEMail) {
-      throw new BadRequestException('There is no user registered with this email.');
-    }
-
+  async findByEmail(email: string): Promise<User | null> {
     const user = this.prisma.user.findUnique({
       where: { email },
     });

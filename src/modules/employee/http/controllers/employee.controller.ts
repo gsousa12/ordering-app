@@ -24,18 +24,22 @@ export class EmployeeController {
   @UseGuards(AuthGuard('jwt'), RoleGuard)
   @Role(UserRoles.OWNER)
   async create(@Body() createEmployeeRequestDto: CreateEmployeeRequestDto, @Request() req) {
-    const userId = req.user.sub;
-    const permissionLevel = req.body.permissionLevel;
-    const restaurantId = req.body.restaurantId;
+    const userId: number = req.user.sub;
+    const permissionLevel = createEmployeeRequestDto.permissionLevel;
+    const restaurantId = createEmployeeRequestDto.restaurantId;
+
     try {
       const employee = await EmployeeMapper.toMapperCreateEmployee(createEmployeeRequestDto);
+
       const createdEmployee = await this.employeeService.createEmployee(
         employee,
         userId,
         restaurantId,
         permissionLevel,
       );
+
       const createEmployeeResponse = EmployeeMapper.toMapperResponse(createdEmployee);
+
       return createEmployeeResponse;
     } catch (e) {
       throw new BadRequestException(e.message);
