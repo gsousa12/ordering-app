@@ -1,4 +1,13 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, BadRequestException, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  Res,
+  Request,
+} from '@nestjs/common';
 import { SignupRequestDto } from '../../domain/dtos/request/signup.request.dto';
 import { AuthService } from '../../domain/services/auth.service';
 import { AuthMapper } from '../../domain/mappers/auth.mapper';
@@ -15,7 +24,7 @@ export class AuthController {
     try {
       const ownerUser = await AuthMapper.toMapperSignup(signupRequestDto);
       const createdOwnerUser = await this.authService.signup(ownerUser);
-      const signupResponse = AuthMapper.toMapperResponse(createdOwnerUser);
+      const signupResponse = AuthMapper.toMapperSignupResponse(createdOwnerUser);
       return signupResponse;
     } catch (e) {
       throw new BadRequestException(e.message);
@@ -27,18 +36,31 @@ export class AuthController {
   async login(@Body() loginDto: LoginRequestDto, @Res({ passthrough: true }) res: Response) {
     try {
       const login = await this.authService.login(loginDto, res);
-      return login;
+      const loginResponse = await AuthMapper.toMapperLoginResponse(login);
+      return loginResponse;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
   }
 
   @Post('/logout')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Res({ passthrough: true }) res: Response) {
     try {
       const logout = await this.authService.logout(res);
       return logout;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+
+  @Post('/refresh-token')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async refreshToken(@Body() Body, @Res({ passthrough: true }) res: Response) {
+    const refresh_token = Body.refresh_token;
+    try {
+      const valideRefreshToken = await this.authService.validateRefreshToken(refresh_token, res);
+      return valideRefreshToken;
     } catch (e) {
       throw new BadRequestException(e.message);
     }

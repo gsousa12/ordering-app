@@ -4,7 +4,6 @@ import { PasswordUtils } from 'src/common/utils/password.utils';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { IAuthRepository } from '../interfaces/auth.interface';
 import { LoginRequestDto } from '../dtos/request/login.request.dto';
-import { LoginResponseDto } from '../dtos/response/login.response.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -41,18 +40,25 @@ export class AuthService {
       throw new BadRequestException('Invalid invalid');
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role, status: user.status };
+    const payload = { sub: user.id, role: user.role };
 
     const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    const implementsCookies = this.implementsCookies(access_token, refresh_token, res);
+    const userId = await this.authRepository.getUserIdByEmail(loginRequestDto.email);
+
+    if (!userId) {
+      throw new BadRequestException('Usuário não encontrado');
+    }
+
+    const implementsCookies = this.implementsCookies(access_token, res);
 
     if (!implementsCookies) {
       throw new BadRequestException('Generic Error');
     }
 
-    return { message: 'Login successful' };
+    const refreshToken = this.generateRefreshToken(userId);
+
+    return refreshToken;
   }
 
   async logout(res: Response) {
@@ -63,6 +69,32 @@ export class AuthService {
     }
 
     return { message: 'Logout successful' };
+  }
+
+  async validateRefreshToken(refresh_token: string, res: Response) {
+    const refreshToken = await this.authRepository.findRefreshToken(refresh_token);
+
+    if (!refreshToken) {
+      throw new BadRequestException('Refresh token inválido ou expirado. Por favor, faça login novamente.');
+    }
+
+    const user = await this.authRepository.findUserbyRefreshToken(refresh_token);
+
+    if (!user) {
+      throw new BadRequestException('Não existe um usuário atrelado');
+    }
+
+    const payload = { sub: user.id, role: user.role };
+
+    const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+
+    const implementsCookies = this.implementsCookies(access_token, res);
+
+    if (!implementsCookies) {
+      throw new BadRequestException('Generic Error');
+    }
+
+    return { message: 'Novo token de acesso gerado' };
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -91,29 +123,36 @@ export class AuthService {
     return null;
   }
 
-  async implementsCookies(access_token: string, refresh_token: string, res: Response) {
+  async implementsCookies(access_token: string, res: Response) {
     res.cookie('access_token', access_token, {
-      httpOnly: true, // Impede acesso via JavaScript
-      secure: AppConfig.node_env === 'production', // Usar HTTPS em produção
-      sameSite: 'strict',
-      maxAge: AppConfig.access_token_age, // 1 hora
-    });
-
-    res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: AppConfig.node_env === 'production',
       sameSite: 'strict',
-      maxAge: AppConfig.refresh_token_age, // 7 dias
+      maxAge: AppConfig.access_token_age,
     });
+  }
+
+  async generateRefreshToken(userId: number) {
+    const expiresAt = AppConfig.refresh_token_age;
+    const refresh_token = crypto.randomUUID();
+
+    await this.authRepository.verifyHasRefreshTokenByUserId(userId);
+
+    const generateRefreshToken = await this.authRepository.generateRefreshToken(
+      refresh_token,
+      expiresAt,
+      userId,
+    );
+
+    if (!generateRefreshToken) {
+      throw new BadRequestException('Error ao gerar o refresh token');
+    }
+
+    return refresh_token;
   }
 
   async clearCookies(res: Response) {
     res.clearCookie('access_token', {
-      httpOnly: true,
-      secure: AppConfig.node_env === 'production',
-      sameSite: 'strict',
-    });
-    res.clearCookie('refresh_token', {
       httpOnly: true,
       secure: AppConfig.node_env === 'production',
       sameSite: 'strict',

@@ -18,29 +18,30 @@ model User {
   updatedAt   DateTime? 
   deletedAt   DateTime?
 
-  // Relação com restaurantes (N:M)
+  // Relações explícitas
   restaurants UserRestaurant[]
+  token       RefreshToken[]
 
   @@map("users")
 }
 
 model Restaurant {
-  id         Int    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
   UF         String
   city       String
-  taxNumber  String  @unique
-  createdAt  DateTime @default(now())
+  taxNumber  String    @unique
+  createdAt  DateTime  @default(now())
   updatedAt  DateTime? 
   deletedAt  DateTime?
 
   // Relação com usuários (N:M)
   users     UserRestaurant[]
-
+  
   @@map("restaurant")
 }
 
- /* Vincular donos a restaurante N:N */
+ /* Vincular donos a restaurante N:M */
 model UserRestaurant {
   userId          Int      
   restaurantId    Int
@@ -56,4 +57,18 @@ model UserRestaurant {
   @@id([userId, restaurantId])
 
   @@map("user_restaurant")
+}
+
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  createdAt DateTime  @default(now())
+  expiresAt DateTime 
+  deletedAt DateTime?
+
+  // Relação com o usuário
+  user      User     @relation(fields: [userId], references: [id]) 
+  
+  @@map("refresh_token")
 }
