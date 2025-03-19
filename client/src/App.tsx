@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,6 +12,7 @@ import { useAppSelector } from "./_shared/redux/hooks";
 import AppNavbar from "./_shared/components/NavBar";
 import Dashboard from "./modules/dashboard/pages/Dashboard";
 import Orders from "./modules/orders/pages/Orders";
+import useAuth from "./modules/auth/hooks/useAuth";
 
 const PrivateRoute = () => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -30,6 +30,7 @@ const PrivateRoute = () => {
 };
 
 function App() {
+  useAuth();
   return (
     <Router>
       <Routes>

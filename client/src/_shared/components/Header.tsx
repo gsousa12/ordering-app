@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Group, Text } from "@mantine/core";
 import { useAppDispatch } from "../redux/hooks";
 import { logoutUser } from "../../modules/auth/redux/slices/authSlice";
