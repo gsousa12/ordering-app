@@ -50,6 +50,9 @@ export class RestaurantRepository implements IRestaurantRepository {
       },
     });
 
-    return existRegisteredTaxNumber;
+    if (existRegisteredTaxNumber.length > 0) {
+      return true;
+    }
+    return false;
   }
 }

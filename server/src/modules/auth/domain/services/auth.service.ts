@@ -45,7 +45,6 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
 
     const userId = await this.authRepository.getUserIdByEmail(loginRequestDto.email);
-
     if (!userId) {
       throw new BadRequestException('Usuário não encontrado');
     }
