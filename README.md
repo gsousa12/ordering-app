@@ -4,12 +4,12 @@
 A **Restaurante API** é uma API desenvolvida para gerenciar um sistema de restaurantes. A API foi projetada com suporte a **multi-tenant**, permitindo que diferentes restaurantes utilizem a mesma infraestrutura sem interferência entre si.
 
 ### Recursos principais:
-- **Criação e gerenciamento de usuários**
-- **Cadastro e gerenciamento de restaurantes**
-- **Criação e controle de pedidos**
-- **Gestão de mesas**
-- **Gestão de contas e pagamentos**
-- **Gestão financeira do estabelecimento**
+- **Criação e gerenciamento de usuários** ✅
+- **Cadastro e gerenciamento de restaurantes** ✅
+- **Criação e controle de pedidos** ❌
+- **Gestão de mesas** ❌
+- **Gestão de contas e pagamentos** ❌
+- **Gestão financeira do estabelecimento** ❌
 
 ## Tecnologias Utilizadas
 A API foi desenvolvida utilizando as seguintes tecnologias:
