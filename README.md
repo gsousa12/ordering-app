@@ -1,7 +1,7 @@
-# Restaurante API
+# Ordering API
 
 ## Descrição
-A **Restaurante API** é uma API desenvolvida para gerenciar um sistema de restaurantes. A API foi projetada com suporte a **multi-tenant**, permitindo que diferentes restaurantes utilizem a mesma infraestrutura sem interferência entre si.
+A **Ordering API** é uma API desenvolvida para gerenciar um sistema de restaurantes. A API foi projetada com suporte a **multi-tenant**, permitindo que diferentes restaurantes utilizem a mesma infraestrutura sem interferência entre si.
 
 ### Recursos principais:
 - **Criação e gerenciamento de usuários** ✅
@@ -51,7 +51,7 @@ Crie um arquivo `.env` na raiz do projeto e configure as seguintes variáveis:
 ```env
 DATABASE_URL=postgresql://seu_usuario:senha@host:porta/database
 JWT_SECRET=seu_segredo
-JWT_REFRESH_SECRET=seu_refresh_segredo
+NODE_ENV = "dev" || "production"
 PORT=3000
 ```
 
