@@ -3,7 +3,6 @@ import { User } from 'src/modules/user/domain/entities/user.entity';
 import { IAuthRepository } from '../../domain/interfaces/auth.interface';
 import { PrismaService } from 'src/common/modules/prisma-module/prisma.service';
 import { UserRoles, UserStatus } from 'src/common/utils/enum';
-import { RefreshToken } from '@prisma/client';
 
 @Injectable()
 export class AuthRepository implements IAuthRepository {

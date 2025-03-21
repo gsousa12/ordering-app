@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           return null;
         },
       ]),
-      secretOrKey: AppConfig.jwt_secret,
+      secretOrKey: String(process.env.JWT_SECRET),
     });
   }
 
